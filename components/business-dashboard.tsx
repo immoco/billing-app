@@ -248,14 +248,19 @@ export default function BusinessDashboard() {
     if (amount === null || amount === undefined || isNaN(amount)) {
       return "₹0"
     }
-    return `₹${amount.toLocaleString()}`
+    return amount.toLocaleString('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
   }
 
   const formatNumber = (num: number | null | undefined) => {
     if (num === null || num === undefined || isNaN(num)) {
       return "0"
     }
-    return num.toLocaleString()
+    return num.toLocaleString('en-IN')
   }
 
   return (
