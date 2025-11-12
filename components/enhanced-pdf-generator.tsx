@@ -155,14 +155,13 @@ export class GSTRulesEngine {
 export class EnhancedPDFGenerator {
   private doc: jsPDF
   private company: CompanyInfo
-  private template: "professional" | "modern" | "minimal" | "detailed" | "gst_compliant" | "government"
+  private template: "professional"
 
   constructor(
     company?: CompanyInfo,
-    template: "professional" | "modern" | "minimal" | "detailed" | "gst_compliant" | "government" = "professional",
   ) {
     this.doc = new jsPDF()
-    this.template = template
+    this.template = "professional"
     this.company = company || {
       name: "BizManager Pro",
       address: "123 Business Street, City, State - 400001",
@@ -188,21 +187,21 @@ export class EnhancedPDFGenerator {
       case "professional":
         this.generateProfessionalTemplate(documentData)
         break
-      case "modern":
-        this.generateModernTemplate(documentData)
-        break
-      case "minimal":
-        this.generateMinimalTemplate(documentData)
-        break
-      case "detailed":
-        this.generateDetailedTemplate(documentData)
-        break
-      case "gst_compliant":
-        this.generateGSTCompliantTemplate(documentData)
-        break
-      case "government":
-        this.generateGovernmentTemplate(documentData)
-        break
+      // case "modern":
+      //   this.generateModernTemplate(documentData)
+      //   break
+      // case "minimal":
+      //   this.generateMinimalTemplate(documentData)
+      //   break
+      // case "detailed":
+      //   this.generateDetailedTemplate(documentData)
+      //   break
+      // case "gst_compliant":
+      //   this.generateGSTCompliantTemplate(documentData)
+      //   break
+      // case "government":
+      //   this.generateGovernmentTemplate(documentData)
+      //   break
     }
 
     if (output === "download") {

@@ -43,7 +43,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
-import { EnhancedPDFGenerator } from "@/components/enhanced-pdf-generator"
+//import { EnhancedPDFGenerator } from "@/components/enhanced-pdf-generator"
 
 interface InvoiceItem {
   id: string
@@ -132,17 +132,17 @@ export default function EnhancedBillingModule() {
   >("all")
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "sent" | "paid" | "overdue" | "cancelled">("all")
   const [searchTerm, setSearchTerm] = useState("")
-  const [pdfTemplate, setPdfTemplate] = useState<
-    "professional" | "modern" | "minimal" | "detailed" | "gst_compliant" | "government"
-  >("professional")
+  // const [pdfTemplate, setPdfTemplate] = useState<
+  //   "professional" | "modern" | "minimal" | "detailed" | "gst_compliant" | "government"
+  // >("professional")
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
 
 
   useEffect(() => {
-    fetch("/api/customers").then(res => res.json()).then(setCustomers);
-    fetch("/api/products").then(res => res.json()).then(setProducts);
+    fetch("/api/customers").then(res => res.json()).then(data => setCustomers(Array.isArray(data) ? data : []));
+    fetch("/api/products").then(res => res.json()).then(data => setProducts(Array.isArray(data) ? data : []));
   }, []);
 
   console.log(customers);
@@ -527,7 +527,6 @@ export default function EnhancedBillingModule() {
     type: "invoice" | "quotation" | "purchase_order" | "sales_order" | "receipt",
     preview = false,
     existingDoc?: Document,
-    template: "professional" | "modern" | "minimal" | "detailed" | "gst_compliant" | "government" = "professional",
   ) => {
     const docData = existingDoc || {
       customer: selectedCustomer,
@@ -550,7 +549,7 @@ export default function EnhancedBillingModule() {
 
     const documentData = {
       documentNumber:
-        existingDoc?.documentNumber || EnhancedPDFGenerator.generateDocumentNumber(getDocumentPrefix(type)),
+        existingDoc?.documentNumber || PDFGenerator.generateDocumentNumber(getDocumentPrefix(type)),
       type,
       date: existingDoc?.date || new Date(),
       dueDate: existingDoc?.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -568,7 +567,7 @@ export default function EnhancedBillingModule() {
       notes: docData.notes,
     };
 
-    const generator = new EnhancedPDFGenerator(undefined, template)
+    const generator = new PDFGenerator(undefined)
 
     if (preview) {
       const pdfBlob = generator.generateDocument(documentData as any, "blob")
@@ -1022,7 +1021,7 @@ export default function EnhancedBillingModule() {
                   <CardTitle>Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label>PDF Template</Label>
                     <Select value={pdfTemplate} onValueChange={(value) => setPdfTemplate(value as typeof pdfTemplate)}>
                       <SelectTrigger>
@@ -1037,7 +1036,7 @@ export default function EnhancedBillingModule() {
                         <SelectItem value="government">Government Style</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </div> */}
                   <div className="grid grid-cols-2 gap-2">
                     <Button onClick={() => saveDocument("draft")} variant="outline">
                       <Save className="mr-2 h-4 w-4" />
@@ -1049,11 +1048,11 @@ export default function EnhancedBillingModule() {
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" onClick={() => generatePDF(documentType, true, undefined, pdfTemplate)}>
+                    <Button variant="outline" onClick={() => generatePDF(documentType, true, undefined)}>
                       <Eye className="mr-2 h-4 w-4" />
                       Preview
                     </Button>
-                    <Button variant="outline" onClick={() => generatePDF(documentType, false, undefined, pdfTemplate)}>
+                    <Button variant="outline" onClick={() => generatePDF(documentType, false, undefined)}>
                       <Download className="mr-2 h-4 w-4" />
                       Download
                     </Button>
@@ -1151,14 +1150,14 @@ export default function EnhancedBillingModule() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => generatePDF(doc.type, true, doc, pdfTemplate)}
+                            onClick={() => generatePDF(doc.type, true, doc)}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => generatePDF(doc.type, false, doc, pdfTemplate)}
+                            onClick={() => generatePDF(doc.type, false, doc)}
                           >
                             <Download className="h-4 w-4" />
                           </Button>
